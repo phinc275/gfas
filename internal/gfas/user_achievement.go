@@ -58,43 +58,6 @@ const (
 	AchievementTierGold   = "GOLD"
 )
 
-func DefaultAchievements() map[AchievementID]map[AchievementTier]*Achievement {
-	return map[AchievementID]map[AchievementTier]*Achievement{
-		AchievementIDCompleteJobSmartContract: {
-			AchievementTierGold: &Achievement{
-				ID:            AchievementIDCompleteJobSmartContract,
-				Category:      AchievementCategorySmartContract,
-				Tier:          AchievementTierGold,
-				BadgeName:     "Senior Blockchain Engineer",
-				Description:   "Complete 15 Smart Contract job",
-				LoyaltyPoints: 5000,
-				Threshold:     15,
-				Metadata:      make(map[string]interface{}),
-			},
-			AchievementTierSilver: &Achievement{
-				ID:            AchievementIDCompleteJobSmartContract,
-				Category:      AchievementCategorySmartContract,
-				Tier:          AchievementTierSilver,
-				BadgeName:     "Intermediate Smart Contract Developer",
-				Description:   "Complete 5 Smart Contract job",
-				LoyaltyPoints: 2000,
-				Threshold:     5,
-				Metadata:      make(map[string]interface{}),
-			},
-			AchievementTierBronze: &Achievement{
-				ID:            AchievementIDCompleteJobSmartContract,
-				Category:      AchievementCategorySmartContract,
-				Tier:          AchievementTierBronze,
-				BadgeName:     "Junior Smart Contract Developer",
-				Description:   "Complete 1 Smart Contract job",
-				LoyaltyPoints: 500,
-				Threshold:     1,
-				Metadata:      make(map[string]interface{}),
-			},
-		},
-	}
-}
-
 type UserAchievements struct {
 	ID           string
 	Achievements map[AchievementID]map[AchievementTier]*Achievement

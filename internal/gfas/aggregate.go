@@ -1,6 +1,8 @@
 package gfas
 
 import (
+	"context"
+
 	"github.com/phinc27/gfas/pkg/es"
 	"github.com/pkg/errors"
 )
@@ -14,7 +16,7 @@ type UserAchievementsAggregate struct {
 	UserAchievements *UserAchievements
 }
 
-func NewUserAchievementsWithID(id string) *UserAchievementsAggregate {
+func NewUserAchievementsAggregateWithID(id string) *UserAchievementsAggregate {
 	if id == "" {
 		return nil
 	}
@@ -115,4 +117,19 @@ func (a *UserAchievementsAggregate) onUserAchievementClaimed(evt es.Event) error
 	achievement.AchievedAt = &eventData.ClaimedAt
 
 	return nil
+}
+
+func LoadUserAchievementsAggregate(ctx context.Context, eventStore es.AggregateStore, aggregateID string) (*UserAchievementsAggregate, error) {
+	userAchievements := NewUserAchievementsAggregateWithID(aggregateID)
+	err := eventStore.Exists(ctx, userAchievements.GetID())
+	if err != nil {
+		return nil, err
+	}
+
+	err = eventStore.Load(ctx, userAchievements)
+	if err != nil {
+		return nil, err
+	}
+
+	return userAchievements, nil
 }
