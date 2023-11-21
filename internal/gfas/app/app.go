@@ -53,6 +53,13 @@ func (app *Application) Run() error {
 		Format: "${time_rfc3339}\t${method}\t${uri}\t${status}\t${latency_human}\n",
 	}))
 	app.echo.Use(middleware.Recover())
+	cors := middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     app.cfg.Http.Origins,
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowCredentials: true,
+		MaxAge:           60 * 60,
+	})
+	app.echo.Use(cors)
 
 	userAchievementsHandlers := gfas.NewUserAchievementsHandlers(
 		app.echo.Group(app.cfg.Http.BasePath).Group(app.cfg.Http.AchievementPath),
