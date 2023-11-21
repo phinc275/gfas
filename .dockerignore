@@ -1,0 +1,6 @@
+.env*
+eventstore
+Dockerfile
+docker-compose*
+.gitignore
+.dockerignore
