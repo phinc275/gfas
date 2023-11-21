@@ -3,8 +3,8 @@ package config
 import (
 	"strings"
 
-	"github.com/phinc27/gfas/pkg/eventstroredb"
-	"github.com/phinc27/gfas/pkg/logger"
+	"github.com/phinc275/gfas/pkg/eventstroredb"
+	"github.com/phinc275/gfas/pkg/logger"
 	"github.com/spf13/viper"
 )
 

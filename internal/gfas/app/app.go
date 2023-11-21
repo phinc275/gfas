@@ -7,11 +7,11 @@ import (
 	"syscall"
 
 	"github.com/labstack/echo/v4"
-	"github.com/phinc27/gfas/config"
-	"github.com/phinc27/gfas/internal/gfas"
-	"github.com/phinc27/gfas/pkg/es/store"
-	"github.com/phinc27/gfas/pkg/eventstroredb"
-	"github.com/phinc27/gfas/pkg/logger"
+	"github.com/phinc275/gfas/config"
+	"github.com/phinc275/gfas/internal/gfas"
+	"github.com/phinc275/gfas/pkg/es/store"
+	"github.com/phinc275/gfas/pkg/eventstroredb"
+	"github.com/phinc275/gfas/pkg/logger"
 )
 
 type Application struct {

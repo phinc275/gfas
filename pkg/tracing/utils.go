@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-	"github.com/phinc27/gfas/pkg/es"
+	"github.com/phinc275/gfas/pkg/es"
 	"google.golang.org/grpc/metadata"
 )
 

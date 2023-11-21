@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/EventStore/EventStore-Client-Go/esdb"
-	"github.com/phinc27/gfas/pkg/constants"
+	"github.com/phinc275/gfas/pkg/constants"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

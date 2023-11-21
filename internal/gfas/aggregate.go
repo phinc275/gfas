@@ -3,7 +3,7 @@ package gfas
 import (
 	"context"
 
-	"github.com/phinc27/gfas/pkg/es"
+	"github.com/phinc275/gfas/pkg/es"
 	"github.com/pkg/errors"
 )
 

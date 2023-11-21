@@ -5,7 +5,7 @@ import (
 	"github.com/hiendaovinh/toolkit/pkg/errorx"
 	"github.com/hiendaovinh/toolkit/pkg/httpx-echo"
 	"github.com/labstack/echo/v4"
-	"github.com/phinc27/gfas/pkg/logger"
+	"github.com/phinc275/gfas/pkg/logger"
 	"github.com/pkg/errors"
 )
 

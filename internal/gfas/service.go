@@ -1,8 +1,8 @@
 package gfas
 
 import (
-	"github.com/phinc27/gfas/pkg/es"
-	"github.com/phinc27/gfas/pkg/logger"
+	"github.com/phinc275/gfas/pkg/es"
+	"github.com/phinc275/gfas/pkg/logger"
 )
 
 type UserAchievementsService struct {

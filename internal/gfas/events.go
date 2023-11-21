@@ -3,7 +3,7 @@ package gfas
 import (
 	"time"
 
-	"github.com/phinc27/gfas/pkg/es"
+	"github.com/phinc275/gfas/pkg/es"
 )
 
 const (

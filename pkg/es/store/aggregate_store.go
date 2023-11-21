@@ -8,9 +8,9 @@ import (
 	"github.com/EventStore/EventStore-Client-Go/esdb"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
-	"github.com/phinc27/gfas/pkg/es"
-	"github.com/phinc27/gfas/pkg/logger"
-	"github.com/phinc27/gfas/pkg/tracing"
+	"github.com/phinc275/gfas/pkg/es"
+	"github.com/phinc275/gfas/pkg/logger"
+	"github.com/phinc275/gfas/pkg/tracing"
 	"github.com/pkg/errors"
 )
 

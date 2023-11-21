@@ -4,9 +4,9 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
-	"github.com/phinc27/gfas/config"
-	"github.com/phinc27/gfas/internal/gfas/app"
-	"github.com/phinc27/gfas/pkg/logger"
+	"github.com/phinc275/gfas/config"
+	"github.com/phinc275/gfas/internal/gfas/app"
+	"github.com/phinc275/gfas/pkg/logger"
 )
 
 func init() {
