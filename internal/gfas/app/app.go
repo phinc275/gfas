@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/phinc275/gfas/config"
 	"github.com/phinc275/gfas/internal/gfas"
 	"github.com/phinc275/gfas/pkg/es/store"
@@ -46,6 +47,12 @@ func (app *Application) Run() error {
 	aggregateStore := store.NewAggregateStore(app.logger, db)
 
 	app.userAchievementsService = gfas.NewUserAchievementsService(app.logger, aggregateStore)
+
+	app.echo.IPExtractor = echo.ExtractIPFromXFFHeader()
+	app.echo.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "${time_rfc3339}\t${method}\t${uri}\t${status}\t${latency_human}\n",
+	}))
+	app.echo.Use(middleware.Recover())
 
 	userAchievementsHandlers := gfas.NewUserAchievementsHandlers(
 		app.echo.Group(app.cfg.Http.BasePath).Group(app.cfg.Http.AchievementPath),
