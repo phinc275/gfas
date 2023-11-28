@@ -4,11 +4,15 @@ go 1.19
 
 require (
 	github.com/EventStore/EventStore-Client-Go v1.0.2
+	github.com/confluentinc/confluent-kafka-go/v2 v2.3.0
+	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.4.0
 	github.com/hiendaovinh/toolkit v0.0.0-20230902094830-c05be5486765
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/phinc275/taskfi-common/go/core v0.0.2
+	github.com/phinc275/taskfi-common/go/dlancer v0.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.17.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
@@ -36,9 +40,12 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0 // indirect
+	github.com/invopop/jsonschema v0.7.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.4.2 // indirect
+	github.com/jhump/protoreflect v1.14.1 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -54,6 +61,7 @@ require (
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
+	github.com/santhosh-tekuri/jsonschema/v5 v5.2.0 // indirect
 	github.com/segmentio/asm v1.1.3 // indirect
 	github.com/segmentio/encoding v0.3.6 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
@@ -73,6 +81,7 @@ require (
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
+	google.golang.org/genproto v0.0.0-20230913181813-007df8e322eb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230920204549-e6e6cdab5c13 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

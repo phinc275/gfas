@@ -1,6 +1,8 @@
 package gfas
 
-import "time"
+import (
+	"time"
+)
 
 type ExternalEvent any
 

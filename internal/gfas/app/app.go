@@ -13,6 +13,7 @@ import (
 	"github.com/phinc275/gfas/pkg/es/store"
 	"github.com/phinc275/gfas/pkg/eventstroredb"
 	"github.com/phinc275/gfas/pkg/logger"
+	"github.com/phinc275/gfas/pkg/mq/kafka"
 )
 
 type Application struct {
@@ -23,6 +24,7 @@ type Application struct {
 	echo   *echo.Echo
 
 	userAchievementsService *gfas.UserAchievementsService
+	eventHandler            *gfas.ExternalEventHandler
 }
 
 func NewApplication(cfg *config.Config, logger logger.Logger) *Application {
@@ -44,9 +46,14 @@ func (app *Application) Run() error {
 	}
 	defer db.Close() // nolint: errcheck
 
+	kafkaMQ, err := kafka.NewMessageQueue(app.cfg.Kafka)
+	if err != nil {
+		return err
+	}
 	aggregateStore := store.NewAggregateStore(app.logger, db)
 
 	app.userAchievementsService = gfas.NewUserAchievementsService(app.logger, aggregateStore)
+	app.eventHandler = gfas.NewExternalEventHandler(app.logger, app.cfg.EventHandler.Topics, app.cfg.EventHandler.NumOfWorkers, kafkaMQ, app.userAchievementsService)
 
 	app.echo.IPExtractor = echo.ExtractIPFromXFFHeader()
 	app.echo.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -74,7 +81,18 @@ func (app *Application) Run() error {
 		}
 	}()
 
+	go func() {
+		if err := app.eventHandler.Start(); err != nil {
+			app.logger.Errorf("(app.eventHandler) err: {%v}", err)
+			cancel()
+		}
+	}()
+
 	<-ctx.Done()
+	if err := app.eventHandler.Stop(); err != nil {
+		app.logger.Warnf("(app.eventHandler.Stop) err: {%v}", err)
+	}
+
 	app.logger.Infof("application exited...")
 	return nil
 }

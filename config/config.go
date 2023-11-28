@@ -5,6 +5,7 @@ import (
 
 	"github.com/phinc275/gfas/pkg/eventstroredb"
 	"github.com/phinc275/gfas/pkg/logger"
+	"github.com/phinc275/gfas/pkg/mq/kafka"
 	"github.com/spf13/viper"
 )
 
@@ -13,6 +14,8 @@ type Config struct {
 	EventStoreConfig eventstroredb.EventStoreConfig `mapstructure:"eventStoreConfig"`
 	Http             Http                           `mapstructure:"http"`
 	Logger           *logger.Config                 `mapstructure:"logger"`
+	Kafka            *kafka.Config                  `mapstructure:"kafka"`
+	EventHandler     *EventHandler                  `mapstructure:"eventHandler"`
 }
 
 type Http struct {
@@ -21,6 +24,11 @@ type Http struct {
 	BasePath        string   `mapstructure:"basePath" validate:"required"`
 	AchievementPath string   `mapstructure:"achievementPath" validate:"required"`
 	Origins         []string `mapstructure:"origins"`
+}
+
+type EventHandler struct {
+	Topics       []string `mapstructure:"topics"`
+	NumOfWorkers int      `mapstructure:"numOfWorkers"`
 }
 
 func DefaultConfig() *Config {
@@ -41,6 +49,16 @@ func DefaultConfig() *Config {
 			DevMode:  true,
 			Encoder:  "console",
 		},
+		Kafka: &kafka.Config{
+			BootstrapServer:   "127.0.0.1",
+			GroupID:           "achievementsystem",
+			AutoOffsetReset:   "earliest",
+			SchemaRegistryURL: "http://127.0.0.1:8081",
+		},
+		EventHandler: &EventHandler{
+			Topics:       []string{"dlancer"},
+			NumOfWorkers: 100,
+		},
 	}
 }
 
@@ -58,6 +76,12 @@ func InitConfig() (*Config, error) {
 	viper.MustBindEnv("logger.level")
 	viper.MustBindEnv("logger.devMode")
 	viper.MustBindEnv("logger.encoder")
+	viper.MustBindEnv("kafka.boostrapServer")
+	viper.MustBindEnv("kafka.groupID")
+	viper.MustBindEnv("kafka.autoOffsetReset")
+	viper.MustBindEnv("kafka.schemaRegistryURL")
+	viper.MustBindEnv("eventHandler.topics")
+	viper.MustBindEnv("eventHandler.numOfWorkers")
 
 	err := viper.Unmarshal(cfg)
 	return cfg, err
