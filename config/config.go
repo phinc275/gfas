@@ -50,7 +50,7 @@ func DefaultConfig() *Config {
 			Encoder:  "console",
 		},
 		Kafka: &kafka.Config{
-			BootstrapServer:   "127.0.0.1",
+			BootstrapServers:  "127.0.0.1",
 			GroupID:           "achievementsystem",
 			AutoOffsetReset:   "earliest",
 			SchemaRegistryURL: "http://127.0.0.1:8081",
@@ -76,7 +76,7 @@ func InitConfig() (*Config, error) {
 	viper.MustBindEnv("logger.level")
 	viper.MustBindEnv("logger.devMode")
 	viper.MustBindEnv("logger.encoder")
-	viper.MustBindEnv("kafka.boostrapServer")
+	viper.MustBindEnv("kafka.bootstrapServers")
 	viper.MustBindEnv("kafka.groupID")
 	viper.MustBindEnv("kafka.autoOffsetReset")
 	viper.MustBindEnv("kafka.schemaRegistryURL")

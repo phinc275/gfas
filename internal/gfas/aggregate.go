@@ -123,12 +123,12 @@ func LoadUserAchievementsAggregate(ctx context.Context, eventStore es.AggregateS
 	userAchievements := NewUserAchievementsAggregateWithID(aggregateID)
 	err := eventStore.Exists(ctx, userAchievements.GetID())
 	if err != nil {
-		return nil, err
+		return userAchievements, err
 	}
 
 	err = eventStore.Load(ctx, userAchievements)
 	if err != nil {
-		return nil, err
+		return userAchievements, err
 	}
 
 	return userAchievements, nil

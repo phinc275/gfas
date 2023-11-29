@@ -14,9 +14,9 @@ import (
 )
 
 type Config struct {
-	BootstrapServer string `mapstructure:"bootstrapServer"`
-	GroupID         string `mapstructure:"groupID"`
-	AutoOffsetReset string `mapstructure:"autoOffsetReset"`
+	BootstrapServers string `mapstructure:"bootstrapServers"`
+	GroupID          string `mapstructure:"groupID"`
+	AutoOffsetReset  string `mapstructure:"autoOffsetReset"`
 
 	SchemaRegistryURL string `mapstructure:"schemaRegistryURL"`
 }
@@ -56,7 +56,7 @@ func NewMessageQueue(cfg *Config) (*MessageQueue, error) {
 
 func (queue *MessageQueue) SubscribeTopics(topics []string) (<-chan mq.MsgResponse, mq.Unsubscribe, error) {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": queue.cfg.BootstrapServer,
+		"bootstrap.servers": queue.cfg.BootstrapServers,
 		"group.id":          queue.cfg.GroupID,
 		"auto.offset.reset": queue.cfg.AutoOffsetReset,
 	})
