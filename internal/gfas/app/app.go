@@ -6,6 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/MicahParks/keyfunc"
+	"github.com/hiendaovinh/toolkit/pkg/auth"
+	"github.com/hiendaovinh/toolkit/pkg/httpx-echo"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/phinc275/gfas/config"
@@ -54,6 +57,17 @@ func (app *Application) Run() error {
 
 	app.userAchievementsService = gfas.NewUserAchievementsService(app.logger, aggregateStore)
 	app.eventHandler = gfas.NewExternalEventHandler(app.logger, app.cfg.EventHandler.Topics, app.cfg.EventHandler.NumOfWorkers, kafkaMQ, app.userAchievementsService)
+
+	authn, err := keyfunc.Get(app.cfg.Http.JWKS, keyfunc.Options{})
+	if err != nil {
+		return err
+	}
+	authz, err := auth.NewLadon(gfas.DefaultPolicies)
+	if err != nil {
+		return err
+	}
+	guard, _ := auth.NewGuard(authn, authz)
+	app.echo.Use(httpx.Authn(guard))
 
 	app.echo.IPExtractor = echo.ExtractIPFromXFFHeader()
 	app.echo.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{

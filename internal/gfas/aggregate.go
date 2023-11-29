@@ -114,7 +114,7 @@ func (a *UserAchievementsAggregate) onUserAchievementClaimed(evt es.Event) error
 		return nil //
 	}
 
-	achievement.AchievedAt = &eventData.ClaimedAt
+	achievement.ClaimedAt = &eventData.ClaimedAt
 
 	return nil
 }

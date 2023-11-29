@@ -48,6 +48,10 @@ func (a *UserAchievementsAggregate) Claim(ctx context.Context, achievementID Ach
 		return ErrAchievementNotAchievedYet
 	}
 
+	if achievement.ClaimedAt != nil {
+		return ErrAchievementAlreadyClaimed
+	}
+
 	now := time.Now()
 	event, err := NewUserAchievementClaimedEvent(a, achievementID, tier, now)
 	if err != nil {

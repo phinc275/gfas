@@ -2,6 +2,7 @@ package gfas
 
 import (
 	"github.com/EventStore/EventStore-Client-Go/esdb"
+	"github.com/hiendaovinh/toolkit/pkg/auth"
 	"github.com/hiendaovinh/toolkit/pkg/errorx"
 	"github.com/hiendaovinh/toolkit/pkg/httpx-echo"
 	"github.com/labstack/echo/v4"
@@ -12,7 +13,7 @@ import (
 type UserAchievementsHandlers interface {
 	ClaimUserAchievement() echo.HandlerFunc
 
-	GetUserAchievementsByID() echo.HandlerFunc
+	GetUserAchievements() echo.HandlerFunc
 
 	RegisterRoutes()
 }
@@ -33,25 +34,30 @@ func NewUserAchievementsHandlers(group *echo.Group, logger logger.Logger, servic
 
 func (handlers *userAchievementsHandlers) ClaimUserAchievement() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// FIXME: consider get userID from context when authentication is implemented
+		ctx := c.Request().Context()
+
+		id, err := auth.ResolveValidSubject(ctx)
+		if err != nil {
+			return httpx.RestAbort(c, nil, err)
+		}
+
 		var request struct {
-			UserID        string `json:"user_id"`
 			AchievementID string `json:"achievement_id"`
 			Tier          string `json:"tier"`
 		}
 
-		err := c.Bind(&request)
+		err = c.Bind(&request)
 		if err != nil {
 			return httpx.RestAbort(c, nil, errorx.Wrap(err, errorx.Validation))
 		}
 
-		command := NewClaimUserAchievementCommand(request.UserID, AchievementID(request.AchievementID), AchievementTier(request.Tier))
+		command := NewClaimUserAchievementCommand(id, AchievementID(request.AchievementID), AchievementTier(request.Tier))
 		err = handlers.service.commands.claimUserAchievement.Handle(c.Request().Context(), command)
 		if err != nil {
 			if errors.Is(err, esdb.ErrStreamNotFound) {
-				return httpx.RestAbort(c, nil, errorx.Wrap(err, errorx.Validation))
+				return httpx.RestAbort(c, nil, errorx.Wrap(ErrInvalidUserAchievement, errorx.Validation))
 			}
-			if errors.Is(err, ErrAchievementNotFound) || errors.Is(err, ErrAchievementNotAchievedYet) {
+			if errors.Is(err, ErrAchievementNotFound) || errors.Is(err, ErrAchievementNotAchievedYet) || errors.Is(err, ErrAchievementAlreadyClaimed) {
 				return httpx.RestAbort(c, nil, errorx.Wrap(err, errorx.Validation))
 			}
 			return httpx.RestAbort(c, nil, errorx.Wrap(err, errorx.Service))
@@ -61,9 +67,14 @@ func (handlers *userAchievementsHandlers) ClaimUserAchievement() echo.HandlerFun
 	}
 }
 
-func (handlers *userAchievementsHandlers) GetUserAchievementsByID() echo.HandlerFunc {
+func (handlers *userAchievementsHandlers) GetUserAchievements() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		id := c.Param("id")
+		ctx := c.Request().Context()
+		id, err := auth.ResolveValidSubject(ctx)
+		if err != nil {
+			return httpx.RestAbort(c, nil, err)
+		}
+
 		query := NewGetUserAchievementsByIDQuery(id)
 		projection, err := handlers.service.queries.UserAchievementsByID.Handle(c.Request().Context(), query)
 		if err != nil {
@@ -75,6 +86,6 @@ func (handlers *userAchievementsHandlers) GetUserAchievementsByID() echo.Handler
 }
 
 func (handlers *userAchievementsHandlers) RegisterRoutes() {
-	handlers.group.GET("/by/user-id/:id", handlers.GetUserAchievementsByID())
+	handlers.group.GET("/", handlers.GetUserAchievements())
 	handlers.group.POST("/claim", handlers.ClaimUserAchievement())
 }

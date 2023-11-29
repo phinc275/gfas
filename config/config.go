@@ -24,6 +24,7 @@ type Http struct {
 	BasePath        string   `mapstructure:"basePath" validate:"required"`
 	AchievementPath string   `mapstructure:"achievementPath" validate:"required"`
 	Origins         []string `mapstructure:"origins"`
+	JWKS            string   `mapstructure:"jwks"`
 }
 
 type EventHandler struct {
@@ -35,7 +36,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		AppName: "Achievement System",
 		EventStoreConfig: eventstroredb.EventStoreConfig{
-			ConnectionString: "esdb://eventstoredb:2113?tls=false",
+			ConnectionString: "esdb://localhost:2113?tls=false",
 		},
 		Http: Http{
 			Addr:            ":8088",
@@ -43,6 +44,7 @@ func DefaultConfig() *Config {
 			BasePath:        "/api/v1",
 			AchievementPath: "/achievements",
 			Origins:         make([]string, 0),
+			JWKS:            "http://localhost:8080/auth/jwks",
 		},
 		Logger: &logger.Config{
 			LogLevel: "info",
@@ -50,13 +52,13 @@ func DefaultConfig() *Config {
 			Encoder:  "console",
 		},
 		Kafka: &kafka.Config{
-			BootstrapServers:  "127.0.0.1",
+			BootstrapServers:  "localhost:9092",
 			GroupID:           "achievementsystem",
 			AutoOffsetReset:   "earliest",
-			SchemaRegistryURL: "http://127.0.0.1:8081",
+			SchemaRegistryURL: "http://localhost:8081",
 		},
 		EventHandler: &EventHandler{
-			Topics:       []string{"dlancer"},
+			Topics:       []string{"events"},
 			NumOfWorkers: 100,
 		},
 	}
@@ -73,6 +75,7 @@ func InitConfig() (*Config, error) {
 	viper.MustBindEnv("http.basePath")
 	viper.MustBindEnv("http.achievementPath")
 	viper.MustBindEnv("http.origins")
+	viper.MustBindEnv("http.jwks")
 	viper.MustBindEnv("logger.level")
 	viper.MustBindEnv("logger.devMode")
 	viper.MustBindEnv("logger.encoder")
