@@ -37,18 +37,7 @@ func NewMessageQueue(cfg *Config) (*MessageQueue, error) {
 		return nil, err
 	}
 
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventJobCompleted{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventJobApplied{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventJobPosted{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventUserAccessed{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventWorkspaceCompleted{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventMoneySpent{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventProfileVerified{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventProfileViewed{}).ProtoReflect().Type())
-
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventSocialConnected{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventSocialRankingUpdated{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventLoyaltyEarned{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.Event{}).ProtoReflect().Type())
 
 	return &MessageQueue{cfg: *cfg, deserializer: deserializer}, nil
 }
