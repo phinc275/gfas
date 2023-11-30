@@ -7,8 +7,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/phinc275/gfas/pkg/logger"
 	"github.com/phinc275/gfas/pkg/mq"
-	"github.com/phinc275/taskfi-common/go/core"
-	"github.com/phinc275/taskfi-common/go/dlancer"
+	"github.com/phinc275/taskfi-common/go/common"
 )
 
 type ExternalEventHandler struct {
@@ -99,104 +98,118 @@ func (handler *ExternalEventHandler) workerFn() {
 }
 
 func externalEventFromMessage(msg proto.Message) (string, ExternalEvent, error) {
-	switch v := msg.(type) {
-	case *core.EventSocialConnected:
-		return v.GetUserId(), ExternalEvent(&ExternalEventSocialConnected{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-			Provider:  v.GetProvider(),
-		}), nil
+	switch e := msg.(type) {
+	case *common.Event:
+		switch vv := e.EventData.(type) {
+		case *common.Event_SocialConnected:
+			v := vv.SocialConnected
+			return v.GetUserId(), ExternalEvent(&ExternalEventSocialConnected{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+				Provider:  v.GetProvider(),
+			}), nil
 
-	case *core.EventSocialRankingUpdated:
-		return v.GetUserId(), ExternalEvent(&ExternalEventSocialRankingUpdated{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-			Provider:  v.GetProvider(),
-			Rank:      v.GetRank(),
-		}), nil
+		case *common.Event_SocialRankingUpdated:
+			v := vv.SocialRankingUpdated
+			return v.GetUserId(), ExternalEvent(&ExternalEventSocialRankingUpdated{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+				Provider:  v.GetProvider(),
+				Rank:      v.GetRank(),
+			}), nil
 
-	case *core.EventLoyaltyEarned:
-		return v.GetUserId(), ExternalEvent(&ExternalEventLoyaltyPointsEarned{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-			Amount:    v.GetAmount(),
-		}), nil
+		case *common.Event_LoyaltyEarned:
+			v := vv.LoyaltyEarned
+			return v.GetUserId(), ExternalEvent(&ExternalEventLoyaltyPointsEarned{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+				Amount:    v.GetAmount(),
+			}), nil
 
-	case *dlancer.EventJobCompleted:
-		return v.GetUserId(), ExternalEvent(&ExternalEventJobCompleted{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-			JobId:     v.GetJobId(),
-			JobCategory: map[string]string{
-				"it-development":       string(AchievementCategoryITDevelopment),
-				"smart-contract":       string(AchievementCategorySmartContract),
-				"design-and-creative":  string(AchievementCategoryDesignAndCreative),
-				"sales-and-marketing":  string(AchievementCategorySalesAndMarketing),
-				"kol-and-web3-advisor": string(AchievementCategoryKOLAndWeb3Advisor),
-			}[v.GetJobCategory()],
-		}), nil
+		case *common.Event_JobCompleted:
+			v := vv.JobCompleted
+			return v.GetUserId(), ExternalEvent(&ExternalEventJobCompleted{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+				JobId:     v.GetJobId(),
+				JobCategory: map[string]string{
+					"it-development":       string(AchievementCategoryITDevelopment),
+					"smart-contract":       string(AchievementCategorySmartContract),
+					"design-and-creative":  string(AchievementCategoryDesignAndCreative),
+					"sales-and-marketing":  string(AchievementCategorySalesAndMarketing),
+					"kol-and-web3-advisor": string(AchievementCategoryKOLAndWeb3Advisor),
+				}[v.GetJobCategory()],
+			}), nil
 
-	case *dlancer.EventJobApplied:
-		return v.GetUserId(), ExternalEvent(&ExternalEventJobApplied{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-			JobId:     v.GetJobId(),
-			JobCategory: map[string]string{
-				"it-development":       string(AchievementCategoryITDevelopment),
-				"smart-contract":       string(AchievementCategorySmartContract),
-				"design-and-creative":  string(AchievementCategoryDesignAndCreative),
-				"sales-and-marketing":  string(AchievementCategorySalesAndMarketing),
-				"kol-and-web3-advisor": string(AchievementCategoryKOLAndWeb3Advisor),
-			}[v.GetJobCategory()],
-		}), nil
+		case *common.Event_JobApplied:
+			v := vv.JobApplied
+			return v.GetUserId(), ExternalEvent(&ExternalEventJobApplied{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+				JobId:     v.GetJobId(),
+				JobCategory: map[string]string{
+					"it-development":       string(AchievementCategoryITDevelopment),
+					"smart-contract":       string(AchievementCategorySmartContract),
+					"design-and-creative":  string(AchievementCategoryDesignAndCreative),
+					"sales-and-marketing":  string(AchievementCategorySalesAndMarketing),
+					"kol-and-web3-advisor": string(AchievementCategoryKOLAndWeb3Advisor),
+				}[v.GetJobCategory()],
+			}), nil
 
-	case *dlancer.EventJobPosted:
-		return v.GetUserId(), ExternalEvent(&ExternalEventJobPosted{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-			JobID:     v.GetJobId(),
-			JobCategory: map[string]string{
-				"it-development":       string(AchievementCategoryITDevelopment),
-				"smart-contract":       string(AchievementCategorySmartContract),
-				"design-and-creative":  string(AchievementCategoryDesignAndCreative),
-				"sales-and-marketing":  string(AchievementCategorySalesAndMarketing),
-				"kol-and-web3-advisor": string(AchievementCategoryKOLAndWeb3Advisor),
-			}[v.GetJobCategory()],
-		}), nil
+		case *common.Event_JobPosted:
+			v := vv.JobPosted
+			return v.GetUserId(), ExternalEvent(&ExternalEventJobPosted{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+				JobID:     v.GetJobId(),
+				JobCategory: map[string]string{
+					"it-development":       string(AchievementCategoryITDevelopment),
+					"smart-contract":       string(AchievementCategorySmartContract),
+					"design-and-creative":  string(AchievementCategoryDesignAndCreative),
+					"sales-and-marketing":  string(AchievementCategorySalesAndMarketing),
+					"kol-and-web3-advisor": string(AchievementCategoryKOLAndWeb3Advisor),
+				}[v.GetJobCategory()],
+			}), nil
 
-	case *dlancer.EventUserAccessed:
-		return v.GetUserId(), ExternalEvent(&ExternalEventUserAccessed{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-		}), nil
+		case *common.Event_UserAccessed:
+			v := vv.UserAccessed
+			return v.GetUserId(), ExternalEvent(&ExternalEventUserAccessed{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+			}), nil
 
-	case *dlancer.EventWorkspaceCompleted:
-		return v.GetUserId(), ExternalEvent(&ExternalEventWorkspaceCompleted{
-			Timestamp:   v.GetTimestamp().AsTime(),
-			UserID:      v.GetUserId(),
-			WorkspaceID: v.GetWorkspaceId(),
-		}), nil
+		case *common.Event_WorkspaceCompleted:
+			v := vv.WorkspaceCompleted
+			return v.GetUserId(), ExternalEvent(&ExternalEventWorkspaceCompleted{
+				Timestamp:   v.GetTimestamp().AsTime(),
+				UserID:      v.GetUserId(),
+				WorkspaceID: v.GetWorkspaceId(),
+			}), nil
 
-	case *dlancer.EventMoneySpent:
-		return v.GetUserId(), ExternalEvent(&ExternalEventMoneySpent{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-			Amount:    v.GetAmount(),
-		}), nil
+		case *common.Event_MoneySpent:
+			v := vv.MoneySpent
+			return v.GetUserId(), ExternalEvent(&ExternalEventMoneySpent{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+				Amount:    v.GetAmount(),
+			}), nil
 
-	case *dlancer.EventProfileVerified:
-		return v.GetUserId(), ExternalEvent(&ExternalEventProfileVerified{
-			Timestamp:  v.GetTimestamp().AsTime(),
-			UserID:     v.GetUserId(),
-			VerifyType: v.GetVerifyType(),
-		}), nil
+		case *common.Event_ProfileVerified:
+			v := vv.ProfileVerified
+			return v.GetUserId(), ExternalEvent(&ExternalEventProfileVerified{
+				Timestamp:  v.GetTimestamp().AsTime(),
+				UserID:     v.GetUserId(),
+				VerifyType: v.GetVerifyType(),
+			}), nil
 
-	case *dlancer.EventProfileViewed:
-		return v.GetUserId(), ExternalEvent(&ExternalEventProfileViewed{
-			Timestamp: v.GetTimestamp().AsTime(),
-			UserID:    v.GetUserId(),
-		}), nil
-	default:
-		return "", nil, fmt.Errorf("unrecognized event %T", v)
+		case *common.Event_ProfileViewed:
+			v := vv.ProfileViewed
+			return v.GetUserId(), ExternalEvent(&ExternalEventProfileViewed{
+				Timestamp: v.GetTimestamp().AsTime(),
+				UserID:    v.GetUserId(),
+			}), nil
+		}
 	}
+
+	return "", nil, fmt.Errorf("unrecognized event %T", msg)
 }
