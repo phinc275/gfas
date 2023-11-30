@@ -50,6 +50,7 @@ services:
     volumes:
       - ./replicator.yml:/app/config/appsettings.yaml
       - ./transform.js:/app/config/transform.js
+      - ./checkpoint:/app/checkpoint
     environment:
       REPLICATOR_DEBUG: 1
     depends_on:
@@ -87,6 +88,10 @@ services:
       CLUSTER_ID: 'lOo7XJsvQ5eTpxGGhzdFlA'
     networks:
       - achievement-system
+    volumes:
+      - ./kafkadata/secrets:/etc/kafka/secrets
+      - ./kafkadata/data:/var/lib/kafka/data
+      - ./kafkadata/logs:/tmp/kraft-combined-logs
 
   init-broker:
     image: confluentinc/cp-kafka:7.5.2
