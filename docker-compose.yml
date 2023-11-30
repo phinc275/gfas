@@ -9,10 +9,14 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - eventstoredb
-      - broker
-      - init-broker
-      - schema-registry
+      eventstoredb:
+        condition: service_started
+      broker:
+        condition: service_started
+      init-broker:
+        condition: service_completed_successfully
+      schema-registry:
+        condition: service_started
     ports:
       - "127.0.0.1:8088:8088"
     networks:
