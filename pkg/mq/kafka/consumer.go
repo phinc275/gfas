@@ -9,8 +9,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/protobuf"
 	"github.com/gogo/protobuf/proto"
 	"github.com/phinc275/gfas/pkg/mq"
-	"github.com/phinc275/taskfi-common/go/core"
-	"github.com/phinc275/taskfi-common/go/dlancer"
+	"github.com/phinc275/taskfi-common/go/common"
 )
 
 type Config struct {
@@ -38,18 +37,18 @@ func NewMessageQueue(cfg *Config) (*MessageQueue, error) {
 		return nil, err
 	}
 
-	_ = deserializer.ProtoRegistry.RegisterMessage((&dlancer.EventJobCompleted{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&dlancer.EventJobApplied{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&dlancer.EventJobPosted{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&dlancer.EventUserAccessed{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&dlancer.EventWorkspaceCompleted{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&dlancer.EventMoneySpent{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&dlancer.EventProfileVerified{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&dlancer.EventProfileViewed{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventJobCompleted{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventJobApplied{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventJobPosted{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventUserAccessed{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventWorkspaceCompleted{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventMoneySpent{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventProfileVerified{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventProfileViewed{}).ProtoReflect().Type())
 
-	_ = deserializer.ProtoRegistry.RegisterMessage((&core.EventSocialConnected{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&core.EventSocialRankingUpdated{}).ProtoReflect().Type())
-	_ = deserializer.ProtoRegistry.RegisterMessage((&core.EventLoyaltyEarned{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventSocialConnected{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventSocialRankingUpdated{}).ProtoReflect().Type())
+	_ = deserializer.ProtoRegistry.RegisterMessage((&common.EventLoyaltyEarned{}).ProtoReflect().Type())
 
 	return &MessageQueue{cfg: *cfg, deserializer: deserializer}, nil
 }

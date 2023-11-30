@@ -14,8 +14,6 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/ory/ladon v1.2.0
 	github.com/phinc275/taskfi-common/go/common v0.0.4
-	github.com/phinc275/taskfi-common/go/core v0.0.2
-	github.com/phinc275/taskfi-common/go/dlancer v0.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.17.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
