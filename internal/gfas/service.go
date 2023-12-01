@@ -23,7 +23,8 @@ func NewUserAchievementsService(
 	)
 
 	userAchievementsByIDHandler := NewUserAchievementsByIDHandler(logger, es)
-	queries := NewUserAchievementsQueries(userAchievementsByIDHandler)
+	userPublicAchievementsByIDHandler := NewUserPublicAchievementsByIDHandler(logger, es)
+	queries := NewUserAchievementsQueries(userAchievementsByIDHandler, userPublicAchievementsByIDHandler)
 
 	return &UserAchievementsService{
 		commands: commands,

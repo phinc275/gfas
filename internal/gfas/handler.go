@@ -85,7 +85,21 @@ func (handlers *userAchievementsHandlers) GetUserAchievements() echo.HandlerFunc
 	}
 }
 
+func (handlers *userAchievementsHandlers) GetUserPublicAchievements() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("userID")
+		query := NewGetUserPublicAchievementsByIDQuery(id)
+		projection, err := handlers.service.queries.UserPublicAchievementsByID.Handle(c.Request().Context(), query)
+		if err != nil {
+			return httpx.RestAbort(c, nil, errorx.Wrap(err, errorx.Service))
+		}
+
+		return httpx.RestAbort(c, projection, nil)
+	}
+}
+
 func (handlers *userAchievementsHandlers) RegisterRoutes() {
 	handlers.group.GET("/", handlers.GetUserAchievements())
+	handlers.group.GET("/public/:userID", handlers.GetUserPublicAchievements())
 	handlers.group.POST("/claim", handlers.ClaimUserAchievement())
 }
