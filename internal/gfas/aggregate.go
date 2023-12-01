@@ -64,7 +64,7 @@ func (a *UserAchievementsAggregate) onUserAchievementProgressChanged(evt es.Even
 
 	achievement.Progress += eventData.ProgressChanged
 	achievement.InternalProgress += eventData.InternalProgressChanged
-	achievement.LastObserved = evt.Timestamp
+	achievement.LastObserved = eventData.Timestamp
 
 	return nil
 }
@@ -82,7 +82,7 @@ func (a *UserAchievementsAggregate) onUserAchievementProgressReset(evt es.Event)
 
 	achievement.Progress = 0
 	achievement.InternalProgress = 0
-	achievement.LastObserved = evt.Timestamp
+	achievement.LastObserved = eventData.Timestamp
 
 	return nil
 }

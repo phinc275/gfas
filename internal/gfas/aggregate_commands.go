@@ -225,9 +225,9 @@ func (a *UserAchievementsAggregate) applyExternalEventUserAccessed(_ context.Con
 		)
 
 		newDate := time.Date(
-			achievement.LastObserved.UTC().Year(),
-			achievement.LastObserved.UTC().Month(),
-			achievement.LastObserved.UTC().Day(),
+			e.Timestamp.UTC().Year(),
+			e.Timestamp.UTC().Month(),
+			e.Timestamp.UTC().Day(),
 			0,
 			0,
 			0,
@@ -235,7 +235,7 @@ func (a *UserAchievementsAggregate) applyExternalEventUserAccessed(_ context.Con
 			time.UTC,
 		)
 
-		if lastObservedDate.After(newDate) {
+		if !lastObservedDate.Before(newDate) {
 			continue
 		}
 
@@ -248,7 +248,6 @@ func (a *UserAchievementsAggregate) applyExternalEventUserAccessed(_ context.Con
 			if err != nil {
 				return errors.Wrap(err, "Apply:UserAchievementProgressResetEvent")
 			}
-			return nil
 		}
 
 		event, err := NewUserAchievementProgressChangedEvent(a, achievementID, tier, 0, 1, e.Timestamp, map[string]interface{}{})
@@ -380,9 +379,9 @@ func (a *UserAchievementsAggregate) applyExternalEventLoyaltyPointsEarned(_ cont
 		)
 
 		newDate := time.Date(
-			achievement.LastObserved.UTC().Year(),
-			achievement.LastObserved.UTC().Month(),
-			achievement.LastObserved.UTC().Day(),
+			e.Timestamp.UTC().Year(),
+			e.Timestamp.UTC().Month(),
+			e.Timestamp.UTC().Day(),
 			0,
 			0,
 			0,
@@ -390,7 +389,7 @@ func (a *UserAchievementsAggregate) applyExternalEventLoyaltyPointsEarned(_ cont
 			time.UTC,
 		)
 
-		if lastObservedDate.After(newDate) {
+		if !lastObservedDate.Before(newDate) {
 			continue
 		}
 
@@ -403,7 +402,6 @@ func (a *UserAchievementsAggregate) applyExternalEventLoyaltyPointsEarned(_ cont
 			if err != nil {
 				return errors.Wrap(err, "Apply:UserAchievementProgressResetEvent")
 			}
-			return nil
 		}
 
 		event, err := NewUserAchievementProgressChangedEvent(a, achievementID, tier, 0, 1, e.Timestamp, map[string]interface{}{})
