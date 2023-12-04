@@ -62,7 +62,7 @@ func (a *UserAchievementsAggregate) Claim(ctx context.Context, achievementID Ach
 		return errors.Wrap(err, "Apply:UserAchievementProgressChangedEvent")
 	}
 
-	externalEvent := ExternalEventLoyaltyPointsEarned{
+	externalEvent := &ExternalEventLoyaltyPointsEarned{
 		Timestamp: now,
 		UserID:    a.UserAchievements.ID,
 		Amount:    achievement.LoyaltyPoints,
@@ -404,7 +404,7 @@ func (a *UserAchievementsAggregate) applyExternalEventLoyaltyPointsEarned(_ cont
 			}
 		}
 
-		event, err := NewUserAchievementProgressChangedEvent(a, achievementID, tier, 0, 1, e.Timestamp, map[string]interface{}{})
+		event, err := NewUserAchievementProgressChangedEvent(a, achievementID, tier, 0, float64(e.Amount), e.Timestamp, map[string]interface{}{})
 		if err != nil {
 			return errors.Wrap(err, "NewUserAchievementProgressChangedEvent")
 		}
