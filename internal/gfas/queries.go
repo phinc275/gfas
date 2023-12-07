@@ -30,7 +30,7 @@ func NewGetUserAchievementsByIDQuery(id string) *GetUserAchievementsByIDQuery {
 }
 
 type UserAchievementsByIDHandler interface {
-	Handle(ctx context.Context, query *GetUserAchievementsByIDQuery) ([]AchievementsProjection, error)
+	Handle(ctx context.Context, query *GetUserAchievementsByIDQuery) ([]AchievementProjection, error)
 }
 
 func NewUserAchievementsByIDHandler(logger logger.Logger, es es.AggregateStore) UserAchievementsByIDHandler {
@@ -42,7 +42,7 @@ type userAchievementsByIDHandler struct {
 	es     es.AggregateStore
 }
 
-func (q *userAchievementsByIDHandler) Handle(ctx context.Context, query *GetUserAchievementsByIDQuery) ([]AchievementsProjection, error) {
+func (q *userAchievementsByIDHandler) Handle(ctx context.Context, query *GetUserAchievementsByIDQuery) ([]AchievementProjection, error) {
 	userAchievements := NewUserAchievementsAggregateWithID(query.ID)
 
 	err := q.es.Load(ctx, userAchievements)
@@ -64,7 +64,7 @@ func NewGetUserPublicAchievementsByIDQuery(id string) *GetUserPublicAchievements
 }
 
 type UserPublicAchievementsByIDHandler interface {
-	Handle(ctx context.Context, query *GetUserPublicAchievementsByIDQuery) ([]AchievementsProjection, error)
+	Handle(ctx context.Context, query *GetUserPublicAchievementsByIDQuery) ([]AchievementProjection, error)
 }
 
 func NewUserPublicAchievementsByIDHandler(logger logger.Logger, es es.AggregateStore) UserPublicAchievementsByIDHandler {
@@ -76,7 +76,7 @@ type userPublicAchievementsByIDHandler struct {
 	es     es.AggregateStore
 }
 
-func (q *userPublicAchievementsByIDHandler) Handle(ctx context.Context, query *GetUserPublicAchievementsByIDQuery) ([]AchievementsProjection, error) {
+func (q *userPublicAchievementsByIDHandler) Handle(ctx context.Context, query *GetUserPublicAchievementsByIDQuery) ([]AchievementProjection, error) {
 	userAchievements := NewUserAchievementsAggregateWithID(query.ID)
 
 	err := q.es.Load(ctx, userAchievements)
