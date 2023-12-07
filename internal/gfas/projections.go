@@ -1,117 +1,126 @@
 package gfas
 
-import "time"
-
-type AchievementsProjection struct {
-	Category     string                  `json:"category"`
-	Achievements []AchievementProjection `json:"achievements"`
-}
+import (
+	"sort"
+	"strings"
+	"time"
+)
 
 type AchievementProjection struct {
-	ID    string                      `json:"id"`
-	Tiers []AchievementTierProjection `json:"tiers"`
-}
+	ID       string `json:"id"`
+	Category string `json:"category"`
+	Tier     string `json:"tier"`
+	Sort     int64  `json:"sort"`
 
-type AchievementTierProjection struct {
-	Tier          string `json:"tier"`
-	Once          bool   `json:"once"` // if once, please display as 0/1
 	BadgeName     string `json:"badge_name"`
 	Description   string `json:"description"`
 	LoyaltyPoints int64  `json:"loyalty_points"`
-	Threshold     int64  `json:"threshold"`
 
-	Progress   int64      `json:"progress"`
+	Progress  int64 `json:"progress"`
+	Threshold int64 `json:"threshold"`
+
+	InternalProgress           float64 `json:"internal_progress,omitempty"`
+	InternalThreshold          float64 `json:"internal_threshold,omitempty"`
+	ShouldShowInternalProgress bool    `json:"should_show_internal_progress"`
+
 	AchievedAt *time.Time `json:"achieved_at"`
 	ClaimedAt  *time.Time `json:"claimed_at"`
 }
 
-func AchievementsProjectionFromAggregate(aggregate *UserAchievementsAggregate) []AchievementsProjection {
-	m := make(map[AchievementCategory]map[AchievementID][]AchievementTierProjection)
-	for id, tiers := range aggregate.UserAchievements.Achievements {
-		definedTiers := []AchievementTier{AchievementTierBronze, AchievementTierSilver, AchievementTierGold}
-		for _, definedTier := range definedTiers {
-			achievement, ok := tiers[definedTier]
-			if !ok {
-				continue
-			}
-			_, ok = m[achievement.Category]
-			if !ok {
-				m[achievement.Category] = make(map[AchievementID][]AchievementTierProjection)
-			}
+func AchievementsProjectionFromAggregate(aggregate *UserAchievementsAggregate) []AchievementProjection {
+	projections := make([]AchievementProjection, 0)
 
-			m[achievement.Category][id] = append(m[achievement.Category][id], AchievementTierProjection{
-				Tier:          string(definedTier),
-				Once:          achievement.Once,
+	for _, achievementTiers := range aggregate.UserAchievements.Achievements {
+		for _, achievement := range achievementTiers {
+
+			achievementProjection := AchievementProjection{
+				ID:            string(achievement.ID),
+				Category:      string(achievement.Category),
+				Tier:          string(achievement.Tier),
 				BadgeName:     achievement.BadgeName,
 				Description:   achievement.Description,
 				LoyaltyPoints: achievement.LoyaltyPoints,
-				Threshold:     achievement.Threshold,
 				Progress:      achievement.Progress,
+				Threshold:     achievement.Threshold,
 				AchievedAt:    achievement.AchievedAt,
 				ClaimedAt:     achievement.ClaimedAt,
-			})
+			}
+
+			if achievement.ShouldShowInternalProgress {
+				achievementProjection.ShouldShowInternalProgress = true
+				achievementProjection.InternalProgress = achievement.InternalProgress
+				achievementProjection.InternalThreshold = achievement.InternalThreshold
+			}
+
+			projections = append(projections, achievementProjection)
 		}
 	}
 
-	projections := make([]AchievementsProjection, 0, len(m))
-	for k, v := range m {
-		achievements := make([]AchievementProjection, 0, len(v))
-		for ak, av := range v {
-			achievements = append(achievements, AchievementProjection{ID: string(ak), Tiers: av})
+	sort.Slice(projections, func(i, j int) bool {
+		if projections[i].Sort != projections[j].Sort {
+			return projections[i].Sort < projections[j].Sort
 		}
-		projections = append(projections, AchievementsProjection{
-			Category:     string(k),
-			Achievements: achievements,
-		})
-	}
+
+		if projections[i].Tier != projections[j].Tier {
+			m := map[string]int{AchievementTierBronze: 1, AchievementTierSilver: 2, AchievementTierGold: 3}
+			iTier := m[projections[i].Tier]
+			jTier := m[projections[j].Tier]
+			return iTier < jTier
+		}
+
+		return strings.Compare(projections[i].ID, projections[j].ID) < 0
+	})
 
 	return projections
 }
 
-func PublicAchievementsProjectionFromAggregate(aggregate *UserAchievementsAggregate) []AchievementsProjection {
-	m := make(map[AchievementCategory]map[AchievementID][]AchievementTierProjection)
-	for id, tiers := range aggregate.UserAchievements.Achievements {
-		definedTiers := []AchievementTier{AchievementTierBronze, AchievementTierSilver, AchievementTierGold}
-		for _, definedTier := range definedTiers {
-			achievement, ok := tiers[definedTier]
-			if !ok {
-				continue
-			}
+func PublicAchievementsProjectionFromAggregate(aggregate *UserAchievementsAggregate) []AchievementProjection {
+	projections := make([]AchievementProjection, 0)
+
+	for _, achievementTiers := range aggregate.UserAchievements.Achievements {
+		for _, achievement := range achievementTiers {
 
 			if !achievement.IsAchieved() {
 				continue
 			}
 
-			_, ok = m[achievement.Category]
-			if !ok {
-				m[achievement.Category] = make(map[AchievementID][]AchievementTierProjection)
-			}
-
-			m[achievement.Category][id] = append(m[achievement.Category][id], AchievementTierProjection{
-				Tier:          string(definedTier),
-				Once:          achievement.Once,
+			achievementProjection := AchievementProjection{
+				ID:            string(achievement.ID),
+				Category:      string(achievement.Category),
+				Tier:          string(achievement.Tier),
 				BadgeName:     achievement.BadgeName,
 				Description:   achievement.Description,
 				LoyaltyPoints: achievement.LoyaltyPoints,
-				Threshold:     achievement.Threshold,
 				Progress:      achievement.Progress,
+				Threshold:     achievement.Threshold,
 				AchievedAt:    achievement.AchievedAt,
 				ClaimedAt:     achievement.ClaimedAt,
-			})
+			}
+
+			if achievement.ShouldShowInternalProgress {
+				achievementProjection.ShouldShowInternalProgress = true
+				achievementProjection.InternalProgress = achievement.InternalProgress
+				achievementProjection.InternalThreshold = achievement.InternalThreshold
+			}
+
+			projections = append(projections, achievementProjection)
 		}
 	}
 
-	projections := make([]AchievementsProjection, 0, len(m))
-	for k, v := range m {
-		achievements := make([]AchievementProjection, 0, len(v))
-		for ak, av := range v {
-			achievements = append(achievements, AchievementProjection{ID: string(ak), Tiers: av})
+	sort.Slice(projections, func(i, j int) bool {
+		if projections[i].Sort != projections[j].Sort {
+			return projections[i].Sort < projections[j].Sort
 		}
-		projections = append(projections, AchievementsProjection{
-			Category:     string(k),
-			Achievements: achievements,
-		})
-	}
+
+		if projections[i].Tier != projections[j].Tier {
+			m := map[string]int{AchievementTierBronze: 1, AchievementTierSilver: 2, AchievementTierGold: 3}
+			iTier := m[projections[i].Tier]
+			jTier := m[projections[j].Tier]
+			return iTier < jTier
+		}
+
+		return strings.Compare(projections[i].ID, projections[j].ID) < 0
+	})
 
 	return projections
 }

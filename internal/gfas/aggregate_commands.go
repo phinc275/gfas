@@ -201,6 +201,76 @@ func (a *UserAchievementsAggregate) applyExternalEventUserAccessed(_ context.Con
 		return err
 	}
 
+	achievementID = AchievementIDVisitSiteTotal
+	for _, tier := range []AchievementTier{AchievementTierBronze, AchievementTierSilver, AchievementTierGold} {
+		achievement, ok := a.UserAchievements.Achievements[achievementID][tier]
+		if !ok {
+			continue
+		}
+
+		if achievement.IsAchieved() {
+			continue
+		}
+
+		// FIXME: use configurable timezone
+		lastObservedDate := time.Date(
+			achievement.LastObserved.UTC().Year(),
+			achievement.LastObserved.UTC().Month(),
+			achievement.LastObserved.UTC().Day(),
+			0,
+			0,
+			0,
+			0,
+			time.UTC,
+		)
+
+		newDate := time.Date(
+			e.Timestamp.UTC().Year(),
+			e.Timestamp.UTC().Month(),
+			e.Timestamp.UTC().Day(),
+			0,
+			0,
+			0,
+			0,
+			time.UTC,
+		)
+
+		if !lastObservedDate.Before(newDate) {
+			continue
+		}
+
+		event, err := NewUserAchievementProgressChangedEvent(a, achievementID, tier, 0, 1, e.Timestamp, map[string]interface{}{})
+		if err != nil {
+			return errors.Wrap(err, "NewUserAchievementProgressChangedEvent")
+		}
+		err = a.Apply(event)
+		if err != nil {
+			return errors.Wrap(err, "Apply:UserAchievementProgressChangedEvent")
+		}
+
+		if a.UserAchievements.CheckInternal(achievementID, tier) {
+			event, err := NewUserAchievementProgressChangedEvent(a, achievementID, tier, 1, 0, e.Timestamp, map[string]interface{}{})
+			if err != nil {
+				return errors.Wrap(err, "NewUserAchievementProgressChangedEvent")
+			}
+			err = a.Apply(event)
+			if err != nil {
+				return errors.Wrap(err, "Apply:UserAchievementProgressChangedEvent")
+			}
+		}
+
+		if a.UserAchievements.IsNewlyAchieved(achievementID, tier) {
+			event, err = NewUserAchievementCompletedEvent(a, achievementID, tier, e.Timestamp)
+			if err != nil {
+				return errors.Wrap(err, "Apply:NewUserAchievementCompletedEvent")
+			}
+			err = a.Apply(event)
+			if err != nil {
+				return errors.Wrap(err, "Apply:UserAchievementCompletedEvent")
+			}
+		}
+	}
+
 	achievementID = AchievementIDVisitSite
 	for _, tier := range []AchievementTier{AchievementTierBronze, AchievementTierSilver, AchievementTierGold} {
 		achievement, ok := a.UserAchievements.Achievements[achievementID][tier]

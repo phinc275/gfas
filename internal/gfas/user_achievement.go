@@ -39,6 +39,7 @@ const (
 	AchievementIDConnectSocialGithub   AchievementID = "CONNECT_SOCIAL_GITHUB"
 
 	AchievementIDVisitSite         AchievementID = "VISIT_SITE"
+	AchievementIDVisitSiteTotal    AchievementID = "VISIT_SITE_TOTAL"
 	AchievementIDCompleteWorkspace AchievementID = "COMPLETE_WORKSPACE"
 
 	AchievementIDPostJob    AchievementID = "POST_JOB"
@@ -80,15 +81,17 @@ func (ua *UserAchievements) CheckInternal(achievementID AchievementID, tier Achi
 }
 
 type Achievement struct {
-	ID                AchievementID
-	Category          AchievementCategory
-	Tier              AchievementTier
-	Once              bool // if once, please display as 0/1
-	BadgeName         string
-	Description       string
-	LoyaltyPoints     int64
-	Threshold         int64
-	InternalThreshold float64 // I believe there must be a `smarter` way to implement this but...
+	ID       AchievementID
+	Category AchievementCategory
+	Tier     AchievementTier
+	Sort     int64
+
+	ShouldShowInternalProgress bool
+	BadgeName                  string
+	Description                string
+	LoyaltyPoints              int64
+	Threshold                  int64
+	InternalThreshold          float64 // I believe there must be a `smarter` way to implement this but...
 
 	AchievedAt *time.Time
 	ClaimedAt  *time.Time
