@@ -67,7 +67,6 @@ func (app *Application) Run() error {
 		return err
 	}
 	guard, _ := auth.NewGuard(authn, authz)
-	app.echo.Use(httpx.Authn(guard))
 
 	app.echo.IPExtractor = echo.ExtractIPFromXFFHeader()
 	app.echo.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -84,6 +83,7 @@ func (app *Application) Run() error {
 
 	userAchievementsHandlers := gfas.NewUserAchievementsHandlers(
 		app.echo.Group(app.cfg.Http.BasePath).Group(app.cfg.Http.AchievementPath),
+		[]echo.MiddlewareFunc{httpx.Authn(guard)},
 		app.logger, app.userAchievementsService,
 	)
 	userAchievementsHandlers.RegisterRoutes()

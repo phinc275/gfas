@@ -12,23 +12,23 @@ import (
 
 type UserAchievementsHandlers interface {
 	ClaimUserAchievement() echo.HandlerFunc
-
 	GetUserAchievements() echo.HandlerFunc
-
 	RegisterRoutes()
 }
 
 type userAchievementsHandlers struct {
-	group   *echo.Group
-	logger  logger.Logger
-	service *UserAchievementsService
+	group           *echo.Group
+	authMiddlewares []echo.MiddlewareFunc
+	logger          logger.Logger
+	service         *UserAchievementsService
 }
 
-func NewUserAchievementsHandlers(group *echo.Group, logger logger.Logger, service *UserAchievementsService) UserAchievementsHandlers {
+func NewUserAchievementsHandlers(group *echo.Group, authMiddlewares []echo.MiddlewareFunc, logger logger.Logger, service *UserAchievementsService) UserAchievementsHandlers {
 	return &userAchievementsHandlers{
-		group:   group,
-		logger:  logger,
-		service: service,
+		group:           group,
+		authMiddlewares: authMiddlewares,
+		logger:          logger,
+		service:         service,
 	}
 }
 
@@ -99,7 +99,7 @@ func (handlers *userAchievementsHandlers) GetUserPublicAchievements() echo.Handl
 }
 
 func (handlers *userAchievementsHandlers) RegisterRoutes() {
-	handlers.group.GET("/", handlers.GetUserAchievements())
+	handlers.group.GET("/", handlers.GetUserAchievements(), handlers.authMiddlewares...)
+	handlers.group.POST("/claim", handlers.ClaimUserAchievement(), handlers.authMiddlewares...)
 	handlers.group.GET("/public/:userID", handlers.GetUserPublicAchievements())
-	handlers.group.POST("/claim", handlers.ClaimUserAchievement())
 }
