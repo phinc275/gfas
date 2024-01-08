@@ -521,17 +521,17 @@ func DefaultAchievements() map[AchievementID]map[AchievementTier]*Achievement {
 		},
 
 		AchievementIDViewOtherProfile: {
-			AchievementTierGold: &Achievement{
-				ID:            AchievementIDViewOtherProfile,
-				Category:      AchievementCategoryCommon,
-				Tier:          AchievementTierGold,
-				Sort:          201300,
-				BadgeName:     "Legendary Viewer",
-				Description:   "View other profiles 100 times",
-				LoyaltyPoints: 5000,
-				Threshold:     100,
-				Metadata:      make(map[string]interface{}),
-			},
+			// AchievementTierGold: &Achievement{
+			// 	ID:            AchievementIDViewOtherProfile,
+			// 	Category:      AchievementCategoryCommon,
+			// 	Tier:          AchievementTierGold,
+			// 	Sort:          201300,
+			// 	BadgeName:     "Legendary Viewer",
+			// 	Description:   "View other profiles 100 times",
+			// 	LoyaltyPoints: 5000,
+			// 	Threshold:     100,
+			// 	Metadata:      make(map[string]interface{}),
+			// },
 			AchievementTierSilver: &Achievement{
 				ID:            AchievementIDViewOtherProfile,
 				Category:      AchievementCategoryCommon,
