@@ -14,4 +14,4 @@ replicator:
     config: ./config/transform.js
     bufferSize: 1000
   checkpoint:
-    path: "./checkpoint"
+    path: "./data/checkpoint"

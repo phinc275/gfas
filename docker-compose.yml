@@ -50,7 +50,7 @@ services:
     volumes:
       - ./replicator.yml:/app/config/appsettings.yaml
       - ./transform.js:/app/config/transform.js
-      - ./checkpoint:/app/checkpoint
+      - ./repldata:/app/data
     environment:
       REPLICATOR_DEBUG: 1
     depends_on:
